@@ -10,6 +10,7 @@ public class Frame extends JFrame {
     public Frame()
     {
         setSize(width, height);
+        setTitle("Rozklad LU");
         setResizable(false);
         this.panel = new Panel(this);
         Container cont = getContentPane();

@@ -12,14 +12,13 @@ import java.util.Arrays;
 
 public class Panel extends JPanel {
 
-    private Image obraz;
     private double[][] matrix;
     private Matrix matrix_instance;
 
     private Frame parent;
     public Panel(Frame parent)
     {
-
+        setBackground(new Color(243, 229, 171));
         this.parent = parent;
         matrix_instance = new Matrix();
 
@@ -48,11 +47,6 @@ public class Panel extends JPanel {
         add(loadbut);
         add(addbut);
 
-        obraz = Toolkit.getDefaultToolkit().getImage("neco2.gif");
-        MediaTracker mt = new MediaTracker(this);
-        mt.addImage(obraz, 0);
-        try {mt.waitForID(0);}
-        catch(InterruptedException e){}
     }
     private void handle_matrix()
     {
@@ -69,28 +63,6 @@ public class Panel extends JPanel {
             ErrorFrame bmframe = new ErrorFrame("Niewłaściwa macierz", "Nie można rozłożyć podanej macierzy");
             bmframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             bmframe.setVisible(true);
-        }
-    }
-
-    @Override
-    protected void paintComponent(Graphics g) {
-
-        super.paintComponent(g);
-
-        int szerObrazu = obraz.getWidth(this);
-        int wysObrazu = obraz.getHeight(this);
-
-        g.drawImage(obraz, 0, 0, null);
-        for (int i=0; i*szerObrazu <= getWidth(); i++)
-        {
-            for (int j = 0; j * wysObrazu <= getHeight(); j++)
-            {
-                if (i + j > 0)
-                {
-                    g.copyArea(0, 0, szerObrazu, wysObrazu, i*szerObrazu, j*wysObrazu);
-                }
-
-            }
         }
     }
 

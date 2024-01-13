@@ -3,59 +3,13 @@ import java.io.*;
 import java.util.Arrays;
 
 public class Matrix {
-    public double calculate_det(double[][] matrix)
-    {
-        int level = matrix.length;
 
-        if (level < 2)
-        {
-            throw new ArithmeticException();
-        }
-
-        else if (level == 2)
-        {
-            return (matrix[0][0] * matrix[1][1]) - (matrix[0][1]*matrix[1][0]);
-        }
-
-        else
-        {
-            double result = 0;
-            for(int i=0; i<level; i++)
-            {
-                double[][] leveled_down_matrix = new double[level-1][level-1];
-                int k = 0;
-                for(int j=0; j<level; j++)
-                {
-                    if(i != j)
-                    {
-                        for(int l=1; l<level; l++)
-                        {
-                            leveled_down_matrix[k][l-1] = matrix[j][l];
-                        }
-                        k++;
-                    }
-
-                }
-                result += Math.pow(-1, i) * matrix[i][0]*calculate_det(leveled_down_matrix);
-            }
-            return result;
-        }
-    }
 
     public double[][][] create_LU_matrices(double[][] matrix) {
-        if (calculate_det(matrix) != 0) {
-            boolean non_zero_diagonal = true;
-            int level = matrix.length;
-            for (int i = 0; i < level; i++) {
-                if (matrix[i][i] == 0) {
-                    non_zero_diagonal = false;
-                    break;
-                } else {
-                    continue;
-                }
-            }
 
-            if (non_zero_diagonal) {
+            int level = matrix.length;
+
+            if (matrix[0][0] != 0) {
                 double[][] l = new double[level][level];
                 double[][] u = new double[level][level];
 
@@ -81,8 +35,16 @@ public class Matrix {
                         for (int k = 0; k < i; k++) {
                             sum += l[i][k] * u[k][j];
                         }
+                        if(l[i][i] != 0)
+                        {
+                            u[i][j] = (1 / l[i][i]) * (matrix[i][j] - sum);
+                        }
 
-                        u[i][j] = (1 / l[i][i]) * (matrix[i][j] - sum);
+                        else
+                        {
+                            throw new ArithmeticException("Nie można rozłożyć macierzy");
+                        }
+
                     }
 
                     for (int i = j; i < level; i++) {
@@ -107,14 +69,9 @@ public class Matrix {
 
             else
             {
-                throw new ArithmeticException("Nie można rozłożyć macierzy mającej 0 na przekątnej");
+                throw new ArithmeticException("Nie można rozłożyć macierzy");
             }
-        }
 
-        else
-        {
-            throw new ArithmeticException("Nie można rozłożyć macierzy osobliwej!");
-        }
     }
 
     public void record_LU_to_file(double[][][] lu)
@@ -156,6 +113,8 @@ public class Matrix {
 
     public double[][] load_matrix_from_file(String file_directory)
     {
+
+
         try {
             BufferedReader fr = new BufferedReader(new FileReader(file_directory));
             String line = fr.readLine();
@@ -166,7 +125,10 @@ public class Matrix {
             {
                 System.out.println(line);
                 String[] line_array = line.split(" ");
-
+                if(line_array.length != matrix.length)
+                {
+                    throw new RuntimeException("Podana macierz nie jest kwadratowa!");
+                }
                 for(int i=0; i < matrix.length; i++)
                 {
                     matrix[j][i] = Double.parseDouble(line_array[i]);
@@ -175,7 +137,15 @@ public class Matrix {
                 line = fr.readLine();
             }
             fr.close();
-            return matrix;
+            if(j == matrix.length)
+            {
+                return matrix;
+            }
+
+            else
+            {
+                throw new RuntimeException("Podana macierz nie jest kwadratowa");
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
